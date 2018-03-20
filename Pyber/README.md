@@ -5,6 +5,9 @@
 #3/19/2018
 #Uber Analysis
 ```
+
+
+```python
 #Observations:
 #1. Rural areas, unsurprisingly, have the fewest drivers and 
 #the lowest number of rides, but the prices tend to be higher.
@@ -17,6 +20,8 @@
 #3. The data is rather consistant when looking at total # of drivers, total 
 # number of rides, and total money made from fares. Urban leads, Suburban
 #follows, and Rural brings up the rear.
+```
+
 
 ```python
 #Dependencies
@@ -24,8 +29,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import os
-
+import math
 import seaborn as sns
+from scipy import stats
 
 ```
 
@@ -129,8 +135,209 @@ plt.show()
 ```
 
 
-![png](output_10_0.png)
+![png](output_11_0.png)
 
+
+
+```python
+total_data.head()
+```
+
+
+
+
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>city</th>
+      <th>date</th>
+      <th>fare</th>
+      <th>ride_id</th>
+      <th>driver_count</th>
+      <th>type</th>
+      <th>num_rides</th>
+      <th>avg_fare</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Sarabury</td>
+      <td>2016-01-16 13:49:27</td>
+      <td>38.35</td>
+      <td>5403689035038</td>
+      <td>46</td>
+      <td>Urban</td>
+      <td>27</td>
+      <td>23.49</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Sarabury</td>
+      <td>2016-07-23 07:42:44</td>
+      <td>21.76</td>
+      <td>7546681945283</td>
+      <td>46</td>
+      <td>Urban</td>
+      <td>27</td>
+      <td>23.49</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Sarabury</td>
+      <td>2016-04-02 04:32:25</td>
+      <td>38.03</td>
+      <td>4932495851866</td>
+      <td>46</td>
+      <td>Urban</td>
+      <td>27</td>
+      <td>23.49</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Sarabury</td>
+      <td>2016-06-23 05:03:41</td>
+      <td>26.82</td>
+      <td>6711035373406</td>
+      <td>46</td>
+      <td>Urban</td>
+      <td>27</td>
+      <td>23.49</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Sarabury</td>
+      <td>2016-09-30 12:48:34</td>
+      <td>30.30</td>
+      <td>6388737278232</td>
+      <td>46</td>
+      <td>Urban</td>
+      <td>27</td>
+      <td>23.49</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+compare_fare_Urban=total_data.loc[total_data["type"]=="Urban",["fare"]]
+#compare_fare_Urban.head()
+compare_fare_Rural=total_data.loc[total_data["type"]=="Rural",["fare"]]
+#compare_fare_Rural.head()
+compare_fare_Suburban=total_data.loc[total_data["type"]=="Suburban",["fare"]]
+#compare_fare_Suburban.head()
+compare_fare_Urban.mean()
+```
+
+
+
+
+    fare    24.663594
+    dtype: float64
+
+
+
+
+```python
+(t_stat, p1) = stats.ttest_ind(compare_fare_Urban, compare_fare_Rural, equal_var=False)
+
+# Report
+print("The mean price of Urban rides is " +str(compare_fare_Urban.mean()))
+print("The mean price of Rural is "+str(compare_fare_Rural.mean()))
+
+
+print("p is {:0.22f}.".format(p1[0]))
+#print(p)
+if p1 < 0.05:
+    print("The difference in sample means is significant.")
+else:
+    print("The difference in sample means is not significant.")
+```
+
+    The mean price of Urban rides is fare    24.663594
+    dtype: float64
+    The mean price of Rural is fare    34.04072
+    dtype: float64
+    p is 0.0000000000175310165167.
+    The difference in sample means is significant.
+    
+
+
+```python
+(t_stat, p2) = stats.ttest_ind(compare_fare_Urban, compare_fare_Suburban, equal_var=False)
+
+# Report
+print("The mean price of Urban rides is " +str(compare_fare_Urban.mean()))
+print("The mean price of Rural is "+str(compare_fare_Suburban.mean()))
+
+
+print("p is {:0.44f}.".format(p2[0]))
+#print(p)
+if p2 < 0.05:
+    print("The difference in sample means is significant.")
+else:
+    print("The difference in sample means is not significant.")
+```
+
+    The mean price of Urban rides is fare    24.663594
+    dtype: float64
+    The mean price of Rural is fare    30.908608
+    dtype: float64
+    p is 0.00000000000000000000000000000010216896853130.
+    The difference in sample means is significant.
+    
+
+
+```python
+(t_stat, p3) = stats.ttest_ind(compare_fare_Rural, compare_fare_Suburban, equal_var=False)
+
+# Report
+print("The mean price of Urban rides is " +str(compare_fare_Rural.mean()))
+print("The mean price of Rural is "+str(compare_fare_Suburban.mean()))
+
+
+print("p is {:0.44f}.".format(p3[0]))
+#print(p)
+if p3 < 0.05:
+    print("The difference in sample means is significant.")
+else:
+    print("The difference in sample means is not significant.")
+```
+
+    The mean price of Urban rides is fare    34.04072
+    dtype: float64
+    The mean price of Rural is fare    30.908608
+    dtype: float64
+    p is 0.01865978150071063990100839191654813475906849.
+    The difference in sample means is significant.
+    
+
+
+```python
+if (p1<0.05)&(p2<0.05)&(p3<0.05):
+    print("All three prices are significantly different from each other")
+```
+
+    All three prices are significantly different from each other
+    
 
 
 ```python
@@ -162,7 +369,7 @@ plt.show()
 ```
 
 
-![png](output_12_0.png)
+![png](output_19_0.png)
 
 
 
@@ -196,7 +403,7 @@ plt.show()
 ```
 
 
-![png](output_14_0.png)
+![png](output_21_0.png)
 
 
 
@@ -230,5 +437,5 @@ plt.show()
 ```
 
 
-![png](output_16_0.png)
+![png](output_23_0.png)
 
